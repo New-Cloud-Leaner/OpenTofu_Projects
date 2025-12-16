@@ -1,0 +1,134 @@
+############################################
+# OpenTofu / Terraform Core
+############################################
+
+# OpenTofu working directory
+.terraform/
+**/.terraform/*
+
+# State files (NEVER COMMIT)
+*.tfstate
+*.tfstate.*
+*.backup
+
+# Crash & debug logs
+crash.log
+crash.*.log
+
+# Provider lock file (ignore for learning, commit later in teams)
+.tofu.lock.hcl
+
+############################################
+# Variables & Secrets
+############################################
+
+# Variable definitions (contain secrets)
+*.tfvars
+*.tfvars.json
+*.auto.tfvars
+*.auto.tfvars.json
+
+# Environment variable files
+.env
+.env.*
+*.env
+
+############################################
+# Logs (Application / Infra / Debug)
+############################################
+
+# Generic logs
+*.log
+*.logs
+logs/
+log/
+
+# Debug / trace outputs
+debug.log
+trace.log
+
+############################################
+# SSH Keys & Certificates
+############################################
+
+# SSH private keys
+*.pem
+*.key
+*.ppk
+id_rsa
+id_rsa.*
+id_ed25519
+id_ed25519.*
+
+# Public keys (optional but safer to ignore)
+*.pub
+
+# Certificates
+*.crt
+*.cer
+*.p12
+*.pfx
+
+############################################
+# Cloud Provider Credentials
+############################################
+
+# AWS credentials
+.aws/
+**/.aws/*
+
+# Google Cloud
+*.json
+gcloud/
+credentials.json
+
+# Azure
+.azure/
+*.azureauth
+
+############################################
+# Backend Configuration (Optional)
+############################################
+
+backend.tf
+backend.hcl
+
+############################################
+# Overrides
+############################################
+
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+############################################
+# CLI Configuration
+############################################
+
+.terraformrc
+tofu.rc
+
+############################################
+# IDE / OS
+############################################
+
+# VS Code
+.vscode/
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# Mac
+.DS_Store
+
+############################################
+# Temporary / Editor Files
+############################################
+
+*.tmp
+*.bak
+*.swp
+*.swo
+*.orig
