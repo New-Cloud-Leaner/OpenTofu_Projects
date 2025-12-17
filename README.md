@@ -10,7 +10,7 @@ Each project is designed, implemented, validated, and version-controlled.
 ## Technology Stack
 
 - **OpenTofu** (Terraform-compatible IaC engine)
-- **AWS** (VPC, EC2, networking, security primitives)
+- **AWS** (Public Cloud Provider)
 - **Git / GitHub** (version control and portfolio tracking)
 - **Linux & Windows** development environments
 
