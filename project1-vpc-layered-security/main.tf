@@ -9,8 +9,8 @@ data "aws_availability_zones" "available" {
 
 # Amazon Linux 2023 AMI (latest)
 data "aws_ami" "al2023" {
-  most_recent      = true
-  owners           = ["amazon"]
+  most_recent = true
+  owners      = ["amazon"]
 
   filter {
     name   = "name"
@@ -26,11 +26,11 @@ data "aws_ami" "al2023" {
 # 1) VPC
 #############################################
 resource "aws_vpc" "main" {
-  cidr_block       = var.vpc_cidr
-  instance_tenancy = "default"
-  enable_dns_support = true
+  cidr_block           = var.vpc_cidr
+  instance_tenancy     = "default"
+  enable_dns_support   = true
   enable_dns_hostnames = true
-  tags{
+  tags {
     Name = var.vpc_name
   }
 }
@@ -51,9 +51,9 @@ resource "aws_internet_gateway" "main" {
 #############################################
 
 resource "aws_subnet" "public" {
-  vpc_id     = aws_vpc.main.id
-  cidr_block = var.public_subnet_cidr
-  availability_zone = data.aws_availability_zones.names[0]
+  vpc_id                  = aws_vpc.main.id
+  cidr_block              = var.public_subnet_cidr
+  availability_zone       = data.aws_availability_zones.names[0]
   map_public_ip_on_launch = true
   tags = {
     Name = var.public_subnet_name
@@ -61,9 +61,9 @@ resource "aws_subnet" "public" {
 }
 
 resource "aws_subnet" "private" {
-  vpc_id     = aws_vpc.main.id
-  cidr_block = var.private_subnet_name
-  availability_zone = data.aws_availability_zones.names[0]
+  vpc_id                  = aws_vpc.main.id
+  cidr_block              = var.private_subnet_name
+  availability_zone       = data.aws_availability_zones.names[0]
   map_public_ip_on_launch = false
   tags = {
     Name = var.private_subnet_name
@@ -82,9 +82,9 @@ resource "aws_route_table" "public" {
 }
 
 resource "aws_route" "public_default" {
-  route_table_id            = aws_route_table.public.id
-  destination_cidr_block    = "0.0.0.0/0"
-  gateway_id = aws_internet_gateway.main.id
+  route_table_id         = aws_route_table.public.id
+  destination_cidr_block = "0.0.0.0/0"
+  gateway_id             = aws_internet_gateway.main.id
 }
 
 resource "aws_route_table_association" "public_assoc" {
@@ -147,7 +147,7 @@ resource "aws_vpc_security_group_egress_rule" "allow_all_traffic_ipv4" {
 
 resource "aws_network_acl" "main" {
   vpc_id = aws_vpc.main.id
-# Inbound rule 100: SSH 22 allow
+  # Inbound rule 100: SSH 22 allow
   ingress {
     protocol   = "tcp"
     rule_no    = 100
@@ -156,7 +156,7 @@ resource "aws_network_acl" "main" {
     from_port  = 22
     to_port    = 22
   }
-# Inbound rule 200: ICMP allow
+  # Inbound rule 200: ICMP allow
   ingress {
     protocol   = "icmp"
     rule_no    = 200
@@ -165,7 +165,7 @@ resource "aws_network_acl" "main" {
     from_port  = "-1"
     to_port    = "-1"
   }
-# Outbound rule 100 ephemeral ports outbound(1024-65535)
+  # Outbound rule 100 ephemeral ports outbound(1024-65535)
   egress {
     protocol   = "tcp"
     rule_no    = 100
@@ -173,17 +173,28 @@ resource "aws_network_acl" "main" {
     cidr_block = "0.0.0.0/0"
     from_port  = 1024
     to_port    = 65535
-  }  
-# Outbound rule 200 for ICMP
+  }
+  # Outbound rule 200 for ICMP
+  egress {
     protocol   = "icmp"
     rule_no    = 200
     action     = "allow"
     cidr_block = "0.0.0.0/0"
     from_port  = "-1"
     to_port    = "-1"
-  }  
+  }
+  # Outbound rule 300 for SSH
+  egress {
+    protocol   = "tcp"
+    rule_no    = 300
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 22
+    to_port    = 22
+  }
   tags = {
     Name = "main"
   }
 }
+
 
