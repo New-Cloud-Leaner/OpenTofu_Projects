@@ -1,9 +1,9 @@
 output "region" {
-    value = var.region
+  value = var.region
 }
 
 output "vpc_id" {
-    value = aws_vpc.main.id
+  value = aws_vpc.main.id
 }
 
 output "public_instance_public_ip" {

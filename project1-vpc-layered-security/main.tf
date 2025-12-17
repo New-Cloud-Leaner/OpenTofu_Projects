@@ -30,7 +30,7 @@ resource "aws_vpc" "main" {
   instance_tenancy     = "default"
   enable_dns_support   = true
   enable_dns_hostnames = true
-  tags {
+  tags = {
     Name = var.vpc_name
   }
 }
@@ -53,7 +53,7 @@ resource "aws_internet_gateway" "main" {
 resource "aws_subnet" "public" {
   vpc_id                  = aws_vpc.main.id
   cidr_block              = var.public_subnet_cidr
-  availability_zone       = data.aws_availability_zones.names[0]
+  availability_zone       = data.aws_availability_zones.available.names[0]
   map_public_ip_on_launch = true
   tags = {
     Name = var.public_subnet_name
@@ -63,7 +63,7 @@ resource "aws_subnet" "public" {
 resource "aws_subnet" "private" {
   vpc_id                  = aws_vpc.main.id
   cidr_block              = var.private_subnet_name
-  availability_zone       = data.aws_availability_zones.names[0]
+  availability_zone       = data.aws_availability_zones.available.names[0]
   map_public_ip_on_launch = false
   tags = {
     Name = var.private_subnet_name
@@ -162,8 +162,8 @@ resource "aws_network_acl" "main" {
     rule_no    = 200
     action     = "allow"
     cidr_block = "0.0.0.0/0"
-    from_port  = "-1"
-    to_port    = "-1"
+    from_port  = 0
+    to_port    = 0
   }
   # Outbound rule 100 ephemeral ports outbound(1024-65535)
   egress {
@@ -180,8 +180,8 @@ resource "aws_network_acl" "main" {
     rule_no    = 200
     action     = "allow"
     cidr_block = "0.0.0.0/0"
-    from_port  = "-1"
-    to_port    = "-1"
+    from_port  = 0
+    to_port    = 0
   }
   tags = {
     Name = "main"
@@ -199,13 +199,6 @@ resource "aws_network_acl_association" "main" {
 }
 
 #############################################
-# 7) Key pair (Using existing Keypair)
-#############################################
-resource "aws_key_pair" "project_key" {
-  key_name = var.key_name
-}
-
-#############################################
 # 8) EC2 instances (Amazon Linux 2023, t3.micro)
 #############################################
 
@@ -214,7 +207,7 @@ resource "aws_instance" "public_instance" {
   instance_type               = "t3.micro"
   subnet_id                   = aws_subnet.public.id
   vpc_security_group_ids      = [aws_security_group.main.id]
-  key_name                    = aws_key_pair.project_key.key_name
+  key_name                    = var.key_name
   associate_public_ip_address = true # add public ip to instance
   tags = {
     Name = "Public_instance"
@@ -226,7 +219,7 @@ resource "aws_instance" "private_instance" {
   instance_type               = "t3.micro"
   subnet_id                   = aws_subnet.private.id
   vpc_security_group_ids      = [aws_security_group.main.id]
-  key_name                    = aws_key_pair.project_key.key_name
+  key_name                    = var.key_name
   associate_public_ip_address = false # only use private ip for the instance
   tags = {
     Name = "Private_instance"
