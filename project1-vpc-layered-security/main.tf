@@ -145,3 +145,45 @@ resource "aws_vpc_security_group_egress_rule" "allow_all_traffic_ipv4" {
 # 6) Network ACL + rules + associations
 #############################################
 
+resource "aws_network_acl" "main" {
+  vpc_id = aws_vpc.main.id
+# Inbound rule 100: SSH 22 allow
+  ingress {
+    protocol   = "tcp"
+    rule_no    = 100
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 22
+    to_port    = 22
+  }
+# Inbound rule 200: ICMP allow
+  ingress {
+    protocol   = "icmp"
+    rule_no    = 200
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = "-1"
+    to_port    = "-1"
+  }
+# Outbound rule 100 ephemeral ports outbound(1024-65535)
+  egress {
+    protocol   = "tcp"
+    rule_no    = 100
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 1024
+    to_port    = 65535
+  }  
+# Outbound rule 200 for ICMP
+    protocol   = "icmp"
+    rule_no    = 200
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = "-1"
+    to_port    = "-1"
+  }  
+  tags = {
+    Name = "main"
+  }
+}
+
