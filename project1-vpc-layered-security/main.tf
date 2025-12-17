@@ -147,46 +147,71 @@ resource "aws_vpc_security_group_egress_rule" "allow_all_traffic_ipv4" {
 
 resource "aws_network_acl" "main" {
   vpc_id = aws_vpc.main.id
-  # Inbound rule 100: SSH 22 allow
-  ingress {
-    protocol   = "tcp"
-    rule_no    = 100
-    action     = "allow"
-    cidr_block = "0.0.0.0/0"
-    from_port  = 22
-    to_port    = 22
-  }
-  # Inbound rule 200: ICMP allow
-  ingress {
-    protocol   = "icmp"
-    rule_no    = 200
-    action     = "allow"
-    cidr_block = "0.0.0.0/0"
-    from_port  = 0
-    to_port    = 0
-  }
-  # Outbound rule 100 ephemeral ports outbound(1024-65535)
-  egress {
-    protocol   = "tcp"
-    rule_no    = 100
-    action     = "allow"
-    cidr_block = "0.0.0.0/0"
-    from_port  = 1024
-    to_port    = 65535
-  }
-  # Outbound rule 200 for ICMP
-  egress {
-    protocol   = "icmp"
-    rule_no    = 200
-    action     = "allow"
-    cidr_block = "0.0.0.0/0"
-    from_port  = 0
-    to_port    = 0
-  }
   tags = {
     Name = "main"
   }
 }
+resource "aws_network_acl_rule" "in_ssh" {
+  network_acl_id = aws_network_acl.main.id
+  rule_number    = 100
+  egress         = false
+  protocol       = "tcp"
+  rule_action    = "allow"
+  cidr_block     = "0.0.0.0/0"
+  from_port      = 22
+  to_port        = 22
+}
+resource "aws_network_acl_rule" "in_icmp_echo_request" {
+  network_acl_id = aws_network_acl.main.id
+  rule_number    = 200
+  egress         = false
+  protocol       = "icmp"
+  rule_action    = "allow"
+  cidr_block     = "0.0.0.0/0"
+  icmp_type      = 8
+  icmp_code      = -1
+}
+resource "aws_network_acl_rule" "in_icmp_echo_reply" {
+  network_acl_id = aws_network_acl.main.id
+  rule_number    = 210
+  egress         = false
+  protocol       = "icmp"
+  rule_action    = "allow"
+  cidr_block     = "0.0.0.0/0"
+  icmp_type      = 0
+  icmp_code      = -1
+}
+resource "aws_network_acl_rule" "out_ephemeral_tcp" {
+  network_acl_id = aws_network_acl.main.id
+  rule_number    = 100
+  egress         = true
+  protocol       = "tcp"
+  rule_action    = "allow"
+  cidr_block     = "0.0.0.0/0"
+  from_port      = 1024
+  to_port        = 65535
+}
+resource "aws_network_acl_rule" "out_icmp_echo_request" {
+  network_acl_id = aws_network_acl.main.id
+  rule_number    = 200
+  egress         = true
+  protocol       = "icmp"
+  rule_action    = "allow"
+  cidr_block     = "0.0.0.0/0"
+  icmp_type      = 8
+  icmp_code      = -1
+}
+resource "aws_network_acl_rule" "out_icmp_echo_reply" {
+  network_acl_id = aws_network_acl.main.id
+  rule_number    = 210
+  egress         = true
+  protocol       = "icmp"
+  rule_action    = "allow"
+  cidr_block     = "0.0.0.0/0"
+  icmp_type      = 0
+  icmp_code      = -1
+}
+
 # Associate NACL to BOTH subnets
 resource "aws_network_acl_association" "public_assoc" {
   network_acl_id = aws_network_acl.main.id
