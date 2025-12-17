@@ -229,6 +229,6 @@ resource "aws_instance" "private_instance" {
   key_name                    = aws_key_pair.project_key.key_name
   associate_public_ip_address = false # only use private ip for the instance
   tags = {
-    Name = "Public_instance"
+    Name = "Private_instance"
   }
 }
