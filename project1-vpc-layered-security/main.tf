@@ -183,18 +183,52 @@ resource "aws_network_acl" "main" {
     from_port  = "-1"
     to_port    = "-1"
   }
-  # Outbound rule 300 for SSH
-  egress {
-    protocol   = "tcp"
-    rule_no    = 300
-    action     = "allow"
-    cidr_block = "0.0.0.0/0"
-    from_port  = 22
-    to_port    = 22
-  }
   tags = {
     Name = "main"
   }
 }
+# Associate NACL to BOTH subnets
+resource "aws_network_acl_association" "public_assoc" {
+  network_acl_id = aws_network_acl.main.id
+  subnet_id      = aws_subnet.public.id
+}
 
+resource "aws_network_acl_association" "main" {
+  network_acl_id = aws_network_acl.main.id
+  subnet_id      = aws_subnet.private.id
+}
 
+#############################################
+# 7) Key pair (Using existing Keypair)
+#############################################
+resource "aws_key_pair" "project_key" {
+  key_name = var.key_name
+}
+
+#############################################
+# 8) EC2 instances (Amazon Linux 2023, t3.micro)
+#############################################
+
+resource "aws_instance" "public_instance" {
+  ami                         = data.aws_ami.al2023.id
+  instance_type               = "t3.micro"
+  subnet_id                   = aws_subnet.public.id
+  vpc_security_group_ids      = [aws_security_group.main.id]
+  key_name                    = aws_key_pair.project_key.key_name
+  associate_public_ip_address = true # add public ip to instance
+  tags = {
+    Name = "Public_instance"
+  }
+}
+
+resource "aws_instance" "private_instance" {
+  ami                         = data.aws_ami.al2023.id
+  instance_type               = "t3.micro"
+  subnet_id                   = aws_subnet.private.id
+  vpc_security_group_ids      = [aws_security_group.main.id]
+  key_name                    = aws_key_pair.project_key.key_name
+  associate_public_ip_address = false # only use private ip for the instance
+  tags = {
+    Name = "Public_instance"
+  }
+}
