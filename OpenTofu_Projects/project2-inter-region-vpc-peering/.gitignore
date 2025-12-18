@@ -1,0 +1,130 @@
+# ================================
+# OpenTofu / Terraform Core
+# ================================
+
+# Working directory (generated)
+.terraform/
+**/.terraform/*
+
+# State files (NEVER COMMIT)
+*.tfstate
+*.tfstate.*
+*.backup
+
+# Crash & debug logs
+crash.log
+crash.*.log
+
+# Provider lock file
+# (COMMIT .terraform.lock.hcl — do NOT ignore it)
+# .terraform.lock.hcl
+
+# ================================
+# Variables & Secrets
+# ================================
+
+# Variable definition files (may contain secrets)
+*.tfvars
+*.tfvars.json
+*.auto.tfvars
+*.auto.tfvars.json
+
+# Environment files
+.env
+.env.*
+*.env
+
+# ================================
+# Logs
+# ================================
+
+*.log
+*.logs
+logs/
+log/
+
+# ================================
+# SSH Keys & Certificates
+# ================================
+
+# SSH private keys
+*.pem
+*.key
+*.ppk
+id_rsa
+id_rsa.*
+id_ed25519
+id_ed25519.*
+
+# Public keys (optional safety)
+*.pub
+
+# Certificates
+*.crt
+*.cer
+*.p12
+*.pfx
+
+# ================================
+# Cloud Provider Credentials
+# ================================
+
+# AWS
+.aws/
+**/.aws/*
+
+# Google Cloud
+credentials.json
+*-credentials.json
+gcloud/
+
+# Azure
+.azure/
+*.azureauth
+
+# ================================
+# Backend Configuration (optional)
+# ================================
+
+backend.tf
+backend.hcl
+
+# ================================
+# Overrides
+# ================================
+
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# ================================
+# CLI Configuration
+# ================================
+
+.terraformrc
+tofu.rc
+
+# ================================
+# IDE / OS
+# ================================
+
+# VS Code
+.vscode/
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# macOS
+.DS_Store
+
+# ================================
+# Temporary / Editor Files
+# ================================
+
+*.tmp
+*.bak
+*.swp
+*.swo
+*.orig
